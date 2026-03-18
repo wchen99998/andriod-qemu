@@ -1,10 +1,13 @@
-.PHONY: docker-image docker-e2e fetch build package e2e
+.PHONY: docker-image docker-e2e host-deps fetch build package e2e
 
 docker-image:
 	docker build -t android16-aosp-qemu-utm-builder -f docker/Dockerfile .
 
 docker-e2e:
 	./scripts/docker-e2e.sh
+
+host-deps:
+	./scripts/install-host-deps.sh
 
 fetch:
 	./scripts/fetch-aosp.sh

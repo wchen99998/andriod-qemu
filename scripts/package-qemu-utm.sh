@@ -336,6 +336,7 @@ ADB is forwarded to port 5555 and fastboot-style traffic to port 5554.
 EOF
 
 export ART_NAME OUT_DIR RAW_DISK KERNEL_PATH INITRD_PATH KERNEL_CMDLINE AOSP_BRANCH TARGET_PRODUCT TARGET_VARIANT
+export TARGET_RELEASE
 export PARTITION_JSON="$(printf '%s\n' "${PARTITION_JSON_LINES[@]}")"
 
 python3 - <<'PY' > "${MANIFEST_PATH}"
@@ -351,6 +352,7 @@ manifest = {
     "artifact_name": os.environ["ART_NAME"],
     "aosp_branch": os.environ["AOSP_BRANCH"],
     "target_product": os.environ["TARGET_PRODUCT"],
+    "target_release": os.environ.get("TARGET_RELEASE", ""),
     "target_variant": os.environ["TARGET_VARIANT"],
     "files": {
         "disk_image": os.path.basename(os.environ["RAW_DISK"]),

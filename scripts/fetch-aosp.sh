@@ -24,11 +24,20 @@ else
 fi
 
 log "Syncing Android source for branch ${AOSP_BRANCH}"
-repo sync \
-  -c \
-  -j "${REPO_SYNC_JOBS}" \
-  --current-branch \
-  --fail-fast \
+SYNC_ARGS=(
+  -c
+  -j "${REPO_SYNC_JOBS}"
+  --current-branch
+  --fail-fast
   --no-clone-bundle
+)
+
+if [[ -n "${REPO_SYNC_PROJECTS}" ]]; then
+  read -r -a SYNC_PROJECTS <<< "${REPO_SYNC_PROJECTS}"
+  log "Using partial repo sync for projects: ${REPO_SYNC_PROJECTS}"
+  repo sync "${SYNC_ARGS[@]}" "${SYNC_PROJECTS[@]}"
+else
+  repo sync "${SYNC_ARGS[@]}"
+fi
 
 log "AOSP source sync complete"

@@ -14,6 +14,7 @@ require_cmd ccache
 BUILD_JOBS="$(determine_jobs)"
 PRODUCT_OUT="$(product_out_dir)"
 PRODUCT_DIST_DIR="$(dist_dir_for_product)"
+LUNCH_COMBO="$(lunch_combo)"
 
 ensure_dir "${CCACHE_DIR}"
 ensure_dir "${PRODUCT_DIST_DIR}"
@@ -25,18 +26,21 @@ ccache -M "${CCACHE_SIZE}" >/dev/null
 
 cd "${AOSP_ROOT}"
 
-log "Building ${TARGET_PRODUCT}-${TARGET_VARIANT} with ${BUILD_JOBS} jobs"
+log "Building ${LUNCH_COMBO} with ${BUILD_JOBS} jobs"
+log "Using lunch combo ${LUNCH_COMBO}"
 
 # DIST_DIR is scoped to the product so repeated runs with different products do
 # not overwrite one another.
 DIST_DIR="${PRODUCT_DIST_DIR}" \
   bash -lc "
     set -euo pipefail
+    set +u
     source build/envsetup.sh
-    lunch ${TARGET_PRODUCT}-${TARGET_VARIANT}
+    set -u
+    lunch ${LUNCH_COMBO}
     m -j${BUILD_JOBS} droid dist
   "
 
 [[ -d "${PRODUCT_OUT}" ]] || die "Product output directory not found: ${PRODUCT_OUT}"
 
-log "Build complete for ${TARGET_PRODUCT}-${TARGET_VARIANT}"
+log "Build complete for ${LUNCH_COMBO}"
